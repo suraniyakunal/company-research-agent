@@ -13,3 +13,10 @@ dependencies = [
     "requests>=2.34.2",
     "uvicorn[standard]>=0.50.0",
 ]
+
+[dependency-groups]
+dev = [
+    "httpx2>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-anyio>=0.0.0",
+]

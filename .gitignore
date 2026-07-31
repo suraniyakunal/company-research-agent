@@ -2,3 +2,14 @@
 .env
 __pycache__/
 
+*.pyc
+
+# Bob IDE internal config
+.bob/
+
+# Scratch / planning docs
+byok-enforcement-plan.md
+
+# Next.js build output
+frontend/.next/
+frontend/node_modules/
