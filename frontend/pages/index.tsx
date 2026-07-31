@@ -42,12 +42,20 @@ export default function Home() {
         }),
       });
 
-      const data = await res.json();
+      const isJson = res.headers.get("content-type")?.includes("application/json");
 
       if (!res.ok) {
-        throw new Error(data.detail || "Something went wrong while researching this company.");
+        const detail = isJson
+          ? (await res.json()).detail
+          : await res.text();
+        throw new Error(detail || `Server error ${res.status}`);
       }
 
+      if (!isJson) {
+        throw new Error(`Unexpected response from server (status ${res.status}). Is the backend running at ${API_URL}?`);
+      }
+
+      const data = await res.json();
       setReport(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unexpected error.");
