@@ -4,10 +4,10 @@ WORKDIR /app
 
 RUN pip install uv
 
-COPY pyproject.toml .
+COPY pyproject.toml uv.lock ./
 
 RUN uv sync --no-dev
 
 COPY main.py agent.py schema.py ./
 
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
