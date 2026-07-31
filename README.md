@@ -4,8 +4,8 @@ Given a company name, this agent plans its own searches, gathers public informat
 
 Built to speed up cold-outreach research before applying to YC-backed startups, but works for any company and any candidate profile.
 
-**Live demo:** [link once deployed]
-**API docs:** [link once deployed]/docs
+**Live demo:** <!-- TODO: fill in after deploy -->
+**API docs:** <!-- TODO: fill in after deploy -->/docs
 
 ---
 
@@ -44,7 +44,7 @@ LangGraph agent
 **LLM:** Google Gemini 2.5 Flash
 **Search:** Serper API
 **Frontend:** Next.js (TypeScript), no UI framework — hand-styled
-**Deploy:** Render (backend) + Vercel (frontend)
+**Deploy:** Railway (backend) + Vercel (frontend)
 
 ---
 
@@ -122,6 +122,29 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+---
+
+## Deployment
+
+### Backend — Railway
+
+1. Go to [railway.com](https://railway.com) → **New Project** → **Deploy from GitHub repo** → select this repo.
+2. Railway auto-detects `railway.toml` and builds `backend/Dockerfile`.
+3. In the Railway service → **Variables**, add:
+   - `GEMINI_API_KEY` = your Gemini API key
+   - `SERPER_API_KEY` = your Serper API key
+4. Note the auto-assigned public URL (e.g. `https://company-research-agent.up.railway.app`).
+
+### Frontend — Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **New Project** → **Import from GitHub** → select this repo.
+2. Vercel detects `vercel.json` and sets the project root to `frontend/` automatically.
+3. In the Vercel project → **Settings → Environment Variables**, add:
+   - `NEXT_PUBLIC_API_URL` = the Railway URL from step 4 above (e.g. `https://company-research-agent.up.railway.app`)
+4. Deploy (or re-deploy if already deployed without the env var set).
+
+> **CORS note:** The backend's `allow_origins=["*"]` already permits the Vercel domain — no backend changes needed.
 
 ---
 

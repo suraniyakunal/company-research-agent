@@ -1,0 +1,6 @@
+.env
+__pycache__
+.venv
+*.pyc
+.python-version
+test_*.py
