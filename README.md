@@ -11,7 +11,9 @@ Built to speed up cold-outreach research before applying to YC-backed startups, 
 
 ## Demo
 
-<video src="Company-Research-Agent.mp4" controls width="100%"></video>
+
+https://github.com/user-attachments/assets/b9bf5c8a-444e-44bf-8302-8e6f62d51c32
+
 
 ---
 
