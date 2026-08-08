@@ -8,6 +8,6 @@ COPY pyproject.toml uv.lock ./
 
 RUN uv sync --no-dev
 
-COPY main.py agent.py schema.py ./
+COPY main.py agent.py schema.py database.py ./
 
 CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}

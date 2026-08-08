@@ -78,3 +78,50 @@ class CompanyReport(BaseModel):
         description="URLs actually used to compile this report — every field's information should be "
         "traceable to one of these"
     )
+
+
+# ---------------------------------------------------------------------------
+# Analytics / stats
+# ---------------------------------------------------------------------------
+
+
+class TopCompany(BaseModel):
+    """A single entry in the most-researched companies list."""
+
+    name: str = Field(description="Company name")
+    count: int = Field(description="Number of successful research runs")
+
+
+class DailyActivity(BaseModel):
+    """Search count for a single calendar day (used in the /analytics dashboard)."""
+
+    date: str = Field(description="ISO date string, e.g. '2025-08-01'")
+    count: int = Field(description="Number of research requests that day")
+
+
+class StatsResponse(BaseModel):
+    """Aggregate analytics returned by GET /stats."""
+
+    total_searches: int = Field(description="All-time research request count")
+    unique_sessions: int = Field(description="Distinct anonymous session IDs seen")
+    success_rate: float = Field(description="Fraction of requests that completed successfully (0–1)")
+    searches_last_7_days: int = Field(description="Requests in the past 7 days")
+    searches_last_30_days: int = Field(description="Requests in the past 30 days")
+    top_companies: List[TopCompany] = Field(description="Up to 10 most-researched companies")
+
+    # Detailed fields — only present when ?detailed=true
+    searches_prev_7_days: Optional[int] = Field(
+        default=None, description="Requests in the 7 days before the current 7-day window"
+    )
+    daily_activity: Optional[List[DailyActivity]] = Field(
+        default=None, description="Per-day breakdown for the past 30 days"
+    )
+    byok_count: Optional[int] = Field(
+        default=None, description="Requests that supplied their own API keys"
+    )
+    free_count: Optional[int] = Field(
+        default=None, description="Requests that used the shared server keys"
+    )
+    avg_duration_ms: Optional[int] = Field(
+        default=None, description="Average successful research duration in milliseconds"
+    )

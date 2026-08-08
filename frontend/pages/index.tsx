@@ -1,8 +1,8 @@
 // frontend/pages/index.tsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
-import type { CompanyReport } from "../types";
+import type { CompanyReport, StatsResponse } from "../types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -24,6 +24,29 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<CompanyReport | null>(null);
 
+  // Anonymous session UUID — generated once per browser, persisted in localStorage.
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Live aggregate stats shown in the header banner.
+  const [liveStats, setLiveStats] = useState<Pick<StatsResponse, "total_searches" | "unique_sessions"> | null>(null);
+
+  useEffect(() => {
+    // Session UUID
+    let id = localStorage.getItem("cra_session_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("cra_session_id", id);
+    }
+    const finalId = id;
+    Promise.resolve().then(() => setSessionId(finalId));
+
+    // Live stats banner
+    fetch(`${API_URL}/stats`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => d && setLiveStats(d))
+      .catch(() => {}); // silently fail — never breaks the page
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -33,7 +56,10 @@ export default function Home() {
     try {
       const res = await fetch(`${API_URL}/research`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(sessionId ? { "X-Session-ID": sessionId } : {}),
+        },
         body: JSON.stringify({
           company_name: companyName,
           user_profile: userProfile,
@@ -68,11 +94,6 @@ export default function Home() {
     <>
       <Head>
         <title>Company Research Agent</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
       </Head>
 
       <main className="page">
@@ -83,6 +104,13 @@ export default function Home() {
             Enter a company name. The agent plans searches, gathers public data, and scores the fit
             against a candidate profile — in under a minute.
           </p>
+          {liveStats && liveStats.total_searches > 0 && (
+            <p className="live-stats">
+              🔍 {liveStats.total_searches.toLocaleString()} companies researched
+              &nbsp;&middot;&nbsp;
+              {liveStats.unique_sessions.toLocaleString()} sessions
+            </p>
+          )}
         </header>
 
         <form onSubmit={handleSubmit} className="intake">
@@ -260,6 +288,17 @@ export default function Home() {
           margin: 8px 0 12px;
         }
         .sub { color: var(--ink-soft); max-width: 520px; line-height: 1.5; }
+        .live-stats {
+          display: inline-block;
+          margin-top: 10px;
+          font-family: "IBM Plex Mono", monospace;
+          font-size: 12px;
+          color: var(--accent);
+          background: rgba(184, 134, 59, 0.08);
+          border: 1px solid rgba(184, 134, 59, 0.25);
+          border-radius: 100px;
+          padding: 4px 12px;
+        }
 
         .intake {
           background: var(--card);
