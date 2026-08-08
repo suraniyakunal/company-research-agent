@@ -9,6 +9,12 @@ Built to speed up cold-outreach research before applying to YC-backed startups, 
 
 ---
 
+## Demo
+
+<video src="Company-Research-Agent.mp4" controls width="100%"></video>
+
+---
+
 ## What it actually does
 
 1. You give it a company name and a short profile of your background.
